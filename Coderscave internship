@@ -1,0 +1,382 @@
+task-1
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class Task {
+  String text;
+  Task(this.text);
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'To-Do App',
+      home: TodoScreen(),
+    );
+  }
+}
+
+class TodoScreen extends StatefulWidget {
+  @override
+  _TodoScreenState createState() => _TodoScreenState();
+}
+
+class _TodoScreenState extends State<TodoScreen> {
+  final List<Task> tasks = [];
+  final TextEditingController taskController = TextEditingController();
+
+  void addTask(String text) {
+    setState(() {
+      tasks.add(Task(text));
+      taskController.clear();
+    });
+  }
+
+  void deleteTask(int index) {
+    setState(() {
+      tasks.removeAt(index);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('To-Do App'),
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: taskController,
+              decoration: InputDecoration(labelText: 'Enter a task'),
+              onSubmitted: (value) => addTask(value),
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: tasks.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(tasks[index].text),
+                  trailing: IconButton(
+                    icon: Icon(Icons.delete),
+                    onPressed: () => deleteTask(index),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+task 2
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class Product {
+  final String name;
+  final String description;
+  final double price;
+
+  Product({required this.name, required this.description, required this.price});
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flipkart Clone',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: ProductListScreen(),
+    );
+  }
+}
+
+class ProductListScreen extends StatelessWidget {
+  final List<Product> products = [
+    Product(name: 'Product 1', description: 'Description 1', price: 19.99),
+    Product(name: 'Product 2', description: 'Description 2', price: 29.99),
+    Product(name: 'Product 3', description: 'Description 3', price: 39.99),
+    // Add more products as needed
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Product List'),
+      ),
+      body: ListView.builder(
+        itemCount: products.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text(products[index].name),
+            subtitle: Text(products[index].description),
+            trailing: Text('\$${products[index].price.toString()}'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProductDetailScreen(product: products[index]),
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+class ProductDetailScreen extends StatelessWidget {
+  final Product product;
+
+  ProductDetailScreen({required this.product});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Product Detail'),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Image.network('https://via.placeholder.com/200'),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  product.name,
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 8),
+                Text(product.description),
+                SizedBox(height: 8),
+                Text('\$${product.price.toString()}'),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ElevatedButton(
+              onPressed: () {
+                // Add the product to the shopping cart
+                // You might want to implement a shopping cart screen for a more complete example
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Added ${product.name} to the cart'),
+                  ),
+                );
+              },
+              child: Text('Add to Cart'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+task 3
+
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Tic Tac Toe',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: TicTacToe(),
+    );
+  }
+}
+
+class TicTacToe extends StatefulWidget {
+  @override
+  _TicTacToeState createState() => _TicTacToeState();
+}
+
+class _TicTacToeState extends State<TicTacToe> {
+  List<List<String>> board = List.generate(3, (_) => List.filled(3, ''));
+
+  String currentPlayer = 'X';
+  bool gameEnded = false;
+
+  void makeMove(int row, int col) {
+    if (board[row][col] == '' && !gameEnded) {
+      setState(() {
+        board[row][col] = currentPlayer;
+        if (checkWinner(row, col)) {
+          showWinnerDialog(currentPlayer);
+          gameEnded = true;
+        } else if (isBoardFull()) {
+          showDrawDialog();
+          gameEnded = true;
+        } else {
+          currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
+        }
+      });
+    }
+  }
+
+  bool checkWinner(int row, int col) {
+    // Check row
+    if (board[row][0] == currentPlayer &&
+        board[row][1] == currentPlayer &&
+        board[row][2] == currentPlayer) {
+      return true;
+    }
+
+    // Check column
+    if (board[0][col] == currentPlayer &&
+        board[1][col] == currentPlayer &&
+        board[2][col] == currentPlayer) {
+      return true;
+    }
+
+    // Check diagonals
+    if (row == col &&
+        board[0][0] == currentPlayer &&
+        board[1][1] == currentPlayer &&
+        board[2][2] == currentPlayer) {
+      return true;
+    }
+
+    if (row + col == 2 &&
+        board[0][2] == currentPlayer &&
+        board[1][1] == currentPlayer &&
+        board[2][0] == currentPlayer) {
+      return true;
+    }
+
+    return false;
+  }
+
+  bool isBoardFull() {
+    for (var row in board) {
+      if (row.contains('')) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  void showWinnerDialog(String winner) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Game Over'),
+          content: Text('$winner wins!'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                resetBoard();
+                Navigator.of(context).pop();
+              },
+              child: Text('Play Again'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void showDrawDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Game Over'),
+          content: Text('It\'s a draw!'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                resetBoard();
+                Navigator.of(context).pop();
+              },
+              child: Text('Play Again'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void resetBoard() {
+    setState(() {
+      board = List.generate(3, (_) => List.filled(3, ''));
+      currentPlayer = 'X';
+      gameEnded = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Tic Tac Toe'),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          GridView.builder(
+            shrinkWrap: true,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+            ),
+            itemBuilder: (BuildContext context, int index) {
+              int row = index ~/ 3;
+              int col = index % 3;
+              return GestureDetector(
+                onTap: () => makeMove(row, col),
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.black),
+                  ),
+                  child: Center(
+                    child: Text(
+                      board[row][col],
+                      style: TextStyle(fontSize: 40.0),
+                    ),
+                  ),
+                ),
+              );
+            },
+            itemCount: 9,
+          ),
+          SizedBox(height: 20.0),
+          ElevatedButton(
+            onPressed: resetBoard,
+            child: Text('Reset Board'),
+          ),
+        ],
+      ),
+    );
+  }
+}
